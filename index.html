@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>StudyTrack v2</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f8ff;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #2e8b57;
+      }
+
+      input, textarea {
+        padding: 8px;
+        margin: 5px;
+        width: 250px;
+      }
+
+      button {
+        background-color: #2e8b57;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        background-color: white;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .delete-btn {
+        background-color: crimson;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .stats {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+
+      textarea {
+        height: 80px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>📚 StudyTrack v2</h1>
+    <p>Write what you studied today:</p>
+
+    <input type="text" id="taskInput" placeholder="e.g. Chemistry - Atomic Model">
+    <button onclick="addTask()">Add</button>
+
+    <ul id="taskList"></ul>
+
+    <div class="stats">
+      ✅ Completed: <span id="count">0</span> tasks
+    </div>
+
+    <h3>📝 Reflection</h3>
+    <textarea id="reflection" placeholder="How do you feel today? What did you learn?"></textarea><br>
+    <button onclick="saveReflection()">Save Reflection</button>
+
+    <p id="savedMessage"></p>
+
+    <script>
+      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      let reflectionText = localStorage.getItem("reflection") || "";
+
+      document.getElementById("reflection").value = reflectionText;
+
+      function renderTasks() {
+        let list = document.getElementById("taskList");
+        list.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+          let li = document.createElement("li");
+          li.textContent = task;
+
+          let delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.classList.add("delete-btn");
+          delBtn.onclick = function() {
+            deleteTask(index);
+          };
+
+          li.appendChild(delBtn);
+          list.appendChild(li);
+        });
+
+        document.getElementById("count").textContent = tasks.length;
+      }
+
+      function addTask() {
+        let input = document.getElementById("taskInput");
+        let task = input.value.trim();
+
+        if (task === "") {
+          alert("Please write something first!");
+          return;
+        }
+
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+
+        input.value = "";
+        renderTasks();
+      }
+
+      function deleteTask(index) {
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+      }
+
+      function saveReflection() {
+        let reflection = document.getElementById("reflection").value;
+        localStorage.setItem("reflection", reflection);
+        document.getElementById("savedMessage").textContent = "💾 Reflection saved!";
+        setTimeout(() => {
+          document.getElementById("savedMessage").textContent = "";
+        }, 2000);
+      }
+
+      renderTasks();
+    </script>
+  </body>
+</html>
